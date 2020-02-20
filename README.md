@@ -1,2 +1,2 @@
-# securityfy
-A web application made for security companies.
+# Securityfy
+#### A web application made for security companies.
