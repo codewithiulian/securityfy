@@ -1,7 +1,7 @@
 <?php
 
 class Controller {
-  public __construct() {
+  public function __construct() {
     
   }
 }

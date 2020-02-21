@@ -1,7 +1,7 @@
 <?php
 
 class Core {
-  public __construct() {
-    
+  public function __construct() {
+    echo 'Core';
   }
 }
