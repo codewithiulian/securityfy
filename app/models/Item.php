@@ -15,8 +15,13 @@ class Item {
    */
   public function getItems($userId){
     $this->db->query('SELECT items.item_name AS itemTitle,
-                             items.item_description AS itemDescription
-                      FROM items WHERE items.user_id = :userId');
+                             items.item_description AS itemDescription,
+                             users.full_name AS itemAuthor,
+                             items.updated_on AS itemDate
+                      FROM items
+                      INNER JOIN users
+                        ON users.user_id = items.user_id
+                      WHERE items.user_id = :userId');
     $this->db->addParameter(':userId', $userId);
 
     return $this->db->getList();
