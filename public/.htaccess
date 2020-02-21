@@ -1,0 +1,13 @@
+# Check for mod_rewrite to be enabled.
+<IfModule mod_rewrite.c>
+  # Disable multiviews -for remove the file extension within the url.
+  Options -Multiviews
+  RewriteEngine On
+  # For redirecting to index if file not found.
+  RewriteBase /securityfy/public/
+  # If file not found redirect to index.php
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  # Allow the use of /page instead of ?url/page
+  RewriteRule  ^(.+)$ index.php?url=$1 [QSA,L]
+</IfModule>
