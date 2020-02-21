@@ -6,7 +6,7 @@
  * URL FORMAT - /controller/method/params
  */
 class Core {
-  protected $currentController = 'Products'; // The default controller page when value is not given.
+  protected $currentController = 'Items'; // The default controller page when value is not given.
   protected $currentMethod = 'index'; // index method for default loading within the given controller.
   protected $parameters = []; // The list of parameters, empty by default.
 

@@ -27,8 +27,8 @@ class Database {
     // Create PDO instance.
     try{
       $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
-    }catch(PDOException $e){
-      $this->error = $e->getMessage();
+    }catch(PDOException $err){
+      $this->error = $err->getMessage();
       echo $this->error;
     }
   }
@@ -43,7 +43,7 @@ class Database {
   /**
    * Adds the given parameter to the query statement.
    */
-  public function addParameter($param, $value, $type){
+  public function addParameter($param, $value, $type = null){
     if(is_null($type)){
       // Define parameter type based on the data type.
       switch(true){
