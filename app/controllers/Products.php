@@ -1,12 +1,12 @@
 <?php
 
-class Products {
+class Products extends Controller {
   public function __construct() {
-    echo 'Products page loaded <br>';
+    $this->productModel = $this->model('Product');
   }
 
   public function index(){
-    echo 'Default function loaded';
+    // echo 'Default function loaded';
   }
 
   public function hello($parameters){
