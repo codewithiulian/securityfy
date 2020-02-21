@@ -10,7 +10,6 @@ class Products {
   }
 
   public function hello($parameters){
-    echo 'Hello: <br>';
-    // print_r(isset($parameters));
+    echo 'Hello method within Products controller!';
   }
 }
