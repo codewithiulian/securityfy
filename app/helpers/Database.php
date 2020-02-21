@@ -32,4 +32,61 @@ class Database {
       echo $this->error;
     }
   }
+
+  /**
+   * Prepares the query statement for execution.
+   */
+  public function query($sql){
+    $this->stmt = $this->dbh->prepare($sql);
+  }
+
+  /**
+   * Adds the given parameter to the query statement.
+   */
+  public function addParameter($param, $value, $type){
+    if(is_null($type)){
+      // Define parameter type based on the data type.
+      switch(true){
+        case is_int($value):
+          $type = PDO::PARAM_INT;
+          break;
+        case is_int($value):
+          $type = PDO::PARAM_BOOL;
+          break;
+        case is_null($value):
+          $type = PDO::PARAM_NULL;
+          break;
+        default:
+          $type = PDO::PARAM_STR;
+      }
+    }
+    // Bind parameters
+    $this->stmt->bindValue($param, $value, $type);
+  }
+
+  /**
+   * Executes the query statement.
+   * Returns true if successful or false if failed.
+   */
+  public function execute(){
+    return $this->stmt->execute();
+  }
+
+  /**
+   * Returns a single result object based on the query statement executed.
+   */
+  public function getSingle(){
+    $this->execute();
+
+    return $this->stmt->fetch(PDO::FETCH_OBJ);
+  }
+
+  /**
+   * Returns an array of results as objects based on the query statement executed.
+   */
+  public function getList(){
+    $this->execute();
+
+    return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+  }
 }
