@@ -9,6 +9,7 @@ class Index extends Controller {
     // Have a custom URL (domain.com/username/index)
     // Get the username parameter from the url and use it to return the user id.
     // Get that user's items based on the user id and generate a readonly page with them.
+    
     $data = [
       'items' => $this->itemsModel->getItems(1)
     ];
