@@ -6,23 +6,27 @@
       <form action="<?php echo URLROOT . '/users/register'; ?>" method="post">
         <div class="form-group">
           <label for="firstName">First name:</label>
-          <input type="text" class="form-control" id="firstName" name="firstName">
+          <input type="text" class="form-control <?php echo (!empty($data['firstName_err'])) ? 'is-invalid' : ''; ?>" id="firstName" name="firstName" value="<?php echo $data['firstName']; ?>">
           <span class="invalid-feedback"><?php echo $data['firstName_err'] ?></span>
         </div>
         <div class="form-group">
           <label for="lastName">Last name:</label>
-          <input type="text" class="form-control" id="lastName" name="lastName">
+          <input type="text" class="form-control <?php echo (!empty($data['lastName_err'])) ? 'is-invalid' : ''; ?>" id="lastName" name="lastName" value="<?php echo $data['lastName']; ?>">
           <span class="invalid-feedback"><?php echo $data['lastName_err'] ?></span>
         </div>
         <div class="form-group">
           <label for="email">Email address:</label>
-          <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+          <input type="email" class="form-control <?php echo (!empty($data['email_err'])) ? 'is-invalid' : ''; ?>" id="email" aria-describedby="emailHelp" value="<?php echo $data['email']; ?>">
           <span class="invalid-feedback"><?php echo $data['email_err'] ?></span>
           <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1">
+          <label for="password">Password</label>
+          <input type="password" class="form-control <?php echo (!empty($data['email_err'])) ? 'is-invalid' : ''; ?>" id="password" name="password">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control <?php echo (!empty($data['email_err'])) ? 'is-invalid' : ''; ?>" id="password" name="password">
         </div>
         <button type="submit" class="btn btn-sm btn-primary align-middle">Register</button>
       </form>
