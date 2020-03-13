@@ -14,5 +14,6 @@ class Index extends Controller {
       'items' => $this->itemsModel->getItems(1)
     ];
     $this->view('pages/index', $data);
+    echo 'Index page';
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+// session_start();
 
 function logUserIn($userId, $userName){
   $_SESSION['userId'] = $userId;
@@ -25,4 +25,11 @@ function isUserLoggedIn($userId, $userName){
  */
 function isLoggedIn(){
   return isset($_SESSION['userId']) && isset($_SESSION['userName']);
+}
+
+/**
+ * Redirects the user to a specific route.
+ */
+function redirect($page) {
+  header('location: ' . URLROOT . '/' . $page);
 }
