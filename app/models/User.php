@@ -8,7 +8,21 @@ class User {
   }
 
   public function register($data){
-    echo 'registered successfuly';
+     $this->db->query('INSERT INTO users
+                                  (first_name,
+                                  last_name,
+                                  email,
+                                  password)
+                       VALUES     (:firstName,
+                                   :lastName,
+                                   :email,
+                                   :password)');
+    $this->db->addParameter(':firstName', $data['firstName']);
+    $this->db->addParameter(':lastName', $data['lastName']);
+    $this->db->addParameter(':email', $data['email']);
+    $this->db->addParameter(':password', $data['password']);
+
+    return $this->db->execute();
   }
 
   /**
@@ -21,6 +35,8 @@ class User {
                       WHERE email = :email;');
     $this->db->addParameter(':email', $email);
 
-    return $this->db->getSingle() > 0;
+    $result = $this->db->getSingle();
+
+    return $this->db->rowCount() > 0;
   }
 }

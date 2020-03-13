@@ -11,7 +11,7 @@ class Users extends Controller {
   }
 
   public function login(){
-    echo 'users login';
+    $this->view('users/login');
   }
 
   public function register(){
@@ -37,7 +37,7 @@ class Users extends Controller {
 
         // Register the user.
         if($this->userModel->register($data)){
-          redirect('users/login', $data);
+          redirect('users/login');
         }else{
           die('Something went wrong with your request. Please try again.');
         }
