@@ -56,21 +56,30 @@ class User {
    * into the database.
    */
   public function register($data){
-     $this->db->query('INSERT INTO users
-                                  (first_name,
-                                  last_name,
-                                  email,
-                                  password)
-                       VALUES     (:firstName,
-                                   :lastName,
-                                   :email,
-                                   :password)');
-    $this->db->addParameter(':firstName', $data['firstName']);
-    $this->db->addParameter(':lastName', $data['lastName']);
-    $this->db->addParameter(':email', $data['email']);
-    $this->db->addParameter(':password', $data['password']);
+    // For Guid storage please see: https://mysqlserverteam.com/storing-uuid-values-in-mysql-tables/
+    try{
+      // Insert the new user record.
+      $this->db->query("INSERT INTO users (user_id,
+                                           first_name,
+                                           last_name,
+                                           email,
+                                           password)
+                        VALUES     (UUID(),
+                                    :firstName,
+                                    :lastName,
+                                    :email,
+                                    :password)");
+      $this->db->addParameter(':firstName', $data['firstName']);
+      $this->db->addParameter(':lastName', $data['lastName']);
+      $this->db->addParameter(':email', $data['email']);
+      $this->db->addParameter(':password', $data['password']);
 
-    return $this->db->execute();
+      $this->db->execute();
+    }catch(PDOException $exception){
+      // Do not catch the exeption only return false.
+      return false;
+    }
+    return true;
   }
 
   /**

@@ -69,8 +69,9 @@ class Users extends Controller {
         // Register the user.
         if($this->userModel->register($data)){
           redirect('users/login');
-        }else{
+        }else{ // If there is an error with the request.
           die('Something went wrong with your request. Please try again.');
+          redirect('users/register');
         }
       }else{ // If any errors.
         $this->view('users/register', $data);
