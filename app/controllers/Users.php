@@ -12,21 +12,29 @@ class Users extends Controller {
 
   public function login(){
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
-      $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING); // https://www.php.net/manual/en/function.filter-input-array.php
+      // Please see: https://www.php.net/manual/en/function.filter-input-array.php
+      $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
       // Initialise the data object array.
       $data = $this->defineDataAssocArray($_POST);
       
       // Validate empty login form.
       $this->validateEmptyLoginForm($data);
-      
-      // // Verify user credentials.
-      // $loggedInUser = $this->getUserCredentials($data);
+
       if($this->loginFormPassedValidation($data)){
-        echo 'logged in';
-        // Start session.
-        // $this->view('users/login', $data);
+        // Verify user credentials.
+        $loggedInUser = $this->userModel->getUserCredentials($data['email'], $data['password']);
+        if($loggedInUser){
+          // Start the session and redirect to dashboard.
+          logUserIn($loggedInUser, $redirectPath);
+        }else{
+          $data['emailError'] = 'Incorrect email or password.';
+          $data['passwordError'] = 'Incorrect email or password.';
+          
+          $this->view('users/login', $data);
+        }
       }else{
+        // If the fields are left empty, reload the login view.
         $this->view('users/login', $data);
       }
     }else{
@@ -56,7 +64,7 @@ class Users extends Controller {
       // If the validation stage is passed.
       if($this->formPassedValidation($data)){
         // Hash the password.
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT); // https://www.php.net/manual/en/function.hash.php
+        $data['password'] = $this->hashPassword($data['password']);
 
         // Register the user.
         if($this->userModel->register($data)){
@@ -76,10 +84,22 @@ class Users extends Controller {
   }
 
   /**
-   * Returns a logged in user credentials object.
+   * Method to hash a given password.
+   * A hashed and salted password is generated.
+   * NOTE: default salt is bound to the hashed password at default cost.
    */
-  private function getUserCredentials($data){
-    return $this->userModel->getUserCredentials($data);
+  private function hashPassword($passwordString){
+    // This function hashes a password string with the default algorithm.
+    // PASSWORD_DEFAULT uses PASSWORD_BYCRYPT algorithm.
+    // It also generates a random salt and binds it to the prefix of the
+    // hashed password.
+    // Hashed password format: https://www.php.net/manual/en/faq.passwords.php#faq.password.storing-salts
+    // &algorithm&options(cost)&salt.&hashedPwd
+    // password_hash documentation: https://www.php.net/manual/en/function.password-hash.php
+    // algorithm fucntion argument docs: https://www.php.net/manual/en/password.constants.php
+    // underlying hasing algo docs: https://www.php.net/manual/en/function.crypt.php
+    // Good usage example: https://www.geeksforgeeks.org/how-to-secure-hash-and-salt-for-php-passwords/
+    return password_hash($passwordString, PASSWORD_DEFAULT);
   }
 
   /**
@@ -204,11 +224,13 @@ class Users extends Controller {
     }
   }
 
-  public function createUserSession($user){
-
-  }
-
   public function logout(){
-    
+    unset($_SESSION['userId']);
+    unset($_SESSION['firstName']);
+    unset($_SESSION['lastName']);
+    unset($_SESSION['fullName']);
+    unset($_SESSION['email']);
+
+    redirect('users/login');
   }
 }
