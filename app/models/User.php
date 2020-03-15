@@ -21,7 +21,8 @@ class User {
                              CONCAT(first_name, ' ', last_name) AS fullName,
                              email,
                              password,
-                             active_on                          AS activeOn
+                             active_on                          AS activeOn,
+                             registered_on                      AS registeredOn
                       FROM users
                       WHERE email = :email;");
     $this->db->addParameter(':email', $email);

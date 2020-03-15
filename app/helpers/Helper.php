@@ -8,6 +8,7 @@ function logUserIn($user, $redirectPath){
   $_SESSION['lastName'] = $user->lastName;
   $_SESSION['fullName'] = $user->fullName;
   $_SESSION['email'] = $user->email;
+  $_SESSION['registeredOn'] = $user->registeredOn;
 
   redirect($redirectPath);
 }
