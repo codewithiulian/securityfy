@@ -7,6 +7,29 @@ class User {
     $this->db = new Database();
   }
 
+  /**
+   * Returns user object if user credentials are correct.
+   */
+  public function getUserCredentials($data){
+    $this->db->query("SELECT TOP(1)
+                             user_id                            AS userId,
+                             first_name                         AS firstName,
+                             last_name                          AS lastName,
+                             CONCAT(first_name, '', last_name)  AS fullName
+                      FROM users
+                      WHERE email = :email
+                        AND password = :password;");
+    $this->db->addParameter(':email', $data['email']);
+    $this->db->addParameter(':password', $data['password']);
+
+    return $this->db->getSingle();
+  }
+
+  /**
+   * Register a user.
+   * Save first name, last name, email and password
+   * into the database.
+   */
   public function register($data){
      $this->db->query('INSERT INTO users
                                   (first_name,

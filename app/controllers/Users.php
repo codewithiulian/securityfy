@@ -11,7 +11,30 @@ class Users extends Controller {
   }
 
   public function login(){
-    $this->view('users/login');
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+      $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING); // https://www.php.net/manual/en/function.filter-input-array.php
+
+      // Initialise the data object array.
+      $data = $this->defineDataAssocArray($_POST);
+      
+      // Validate empty login form.
+      $this->validateEmptyLoginForm($data);
+      
+      // // Verify user credentials.
+      // $loggedInUser = $this->getUserCredentials($data);
+      if($this->loginFormPassedValidation($data)){
+        echo 'logged in';
+        // Start session.
+        // $this->view('users/login', $data);
+      }else{
+        $this->view('users/login', $data);
+      }
+    }else{
+      // Initialise empty data object array.
+      $data = $this->initDataObject(true);
+      // Load the register view with the default data.
+      $this->view('users/login', $data);
+    }
   }
 
   public function register(){
@@ -21,7 +44,7 @@ class Users extends Controller {
       $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING); // https://www.php.net/manual/en/function.filter-input-array.php
       
       // Initialise the data object array.
-      $data = $this->defineDataObject($_POST);
+      $data = $this->defineDataAssocArray($_POST);
 
       // Validate fields if left empty.
       $this->validateFieldsForEmpty($data);
@@ -46,9 +69,28 @@ class Users extends Controller {
       }
     }else{
       // Initialise empty data object array.
-      $data = $this->initDataObject();
+      $data = $this->initDataObject(false);
       // Load the register view with the default data.
       $this->view('users/register', $data);
+    }
+  }
+
+  /**
+   * Returns a logged in user credentials object.
+   */
+  private function getUserCredentials($data){
+    return $this->userModel->getUserCredentials($data);
+  }
+
+  /**
+   * Validates empty login form.
+   */
+  private function validateEmptyLoginForm(&$data){
+    if(empty($data['email'])){
+      $data['emailError'] = 'Please fill in your email address.';
+    }
+    if(empty($data['password'])){
+      $data['passwordError'] = 'Please fill in your password.';
     }
   }
 
@@ -64,34 +106,63 @@ class Users extends Controller {
         && empty($data['confirmedPasswordError']);
   }
 
-  private function initDataObject(){
-    return [
-      'firstName' => '',
-      'lastName' => '',
-      'email' => '',
-      'password' => '',
-      'confirmedPassword' => '',
-      'firstNameError' => '',
-      'lastNameError' => '',
-      'emailError' => '',
-      'passwordError' => '',
-      'confirmedPasswordError' => ''
-    ];
+  private function loginFormPassedValidation($data){
+    return empty($data['emailError'])
+        && empty($data['passwordError']);
   }
 
-  private function defineDataObject($postData){
-    return [
-      'firstName' => trim($postData['firstName']),
-      'lastName' => trim($postData['lastName']),
+  /**
+   * Returns an empty associative array.
+   * isLogin is true if initialiser called
+   * from the login method.
+   */
+  private function initDataObject($isLogin){
+    $data = [
+      'email' => '',
+      'password' => '',
+      'emailError' => '',
+      'passwordError' => ''
+    ];
+
+    // If this is the registration initialiser.
+    if(!$isLogin){
+      // Define all the fields.
+      $data += [
+        'firstName' => '',
+        'lastName' => '',
+        'confirmedPassword' => '',
+        'firstNameError' => '',
+        'lastNameError' => '',
+        'confirmedPasswordError' => ''
+      ];
+    }
+
+    return $data;
+  }
+
+  private function defineDataAssocArray($postData){
+    // Define default data object.
+    $data =  [
       'email' => trim($postData['email']),
       'password' => trim($postData['password']),
-      'confirmedPassword' => trim($postData['confirmedPassword']),
-      'firstNameError' => '',
-      'lastNameError' => '',
       'emailError' => '',
-      'passwordError' => '',
-      'confirmedPasswordError' => ''
+      'passwordError' => ''
     ];
+
+    // If this method is requested on registration.
+    if(isset($postData['firstName'])){
+      // Add registration indexes to the assoc array.
+      $data += [
+        'firstName' => trim($postData['firstName']),
+        'lastName' => trim($postData['lastName']),
+        'confirmedPassword' => trim($postData['confirmedPassword']),
+        'firstNameError' => '',
+        'lastNameError' => '',
+        'confirmedPasswordError' => ''
+      ];
+    }
+
+    return $data;
   }
 
   private function validateUserPasword(&$data){
