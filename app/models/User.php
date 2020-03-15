@@ -18,9 +18,10 @@ class User {
     $this->db->query("SELECT user_id                            AS userId,
                              first_name                         AS firstName,
                              last_name                          AS lastName,
-                             CONCAT(first_name, ' ', last_name)  AS fullName,
+                             CONCAT(first_name, ' ', last_name) AS fullName,
                              email,
-                             password
+                             password,
+                             active_on                          AS activeOn
                       FROM users
                       WHERE email = :email;");
     $this->db->addParameter(':email', $email);
@@ -47,7 +48,15 @@ class User {
       // Return false if no record is found.
       return false;
     }
-    
+  }
+
+  public function updateUserActivity($userId){
+    $this->db->query("UPDATE users
+                      SET active_on =	CURRENT_TIMESTAMP()
+                      WHERE user_id = :userId;");
+    $this->db->addParameter(':userId', $userId);
+
+    $this->db->execute();
   }
 
   /**

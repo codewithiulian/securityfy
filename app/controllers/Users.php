@@ -24,9 +24,10 @@ class Users extends Controller {
       if($this->loginFormPassedValidation($data)){
         // Verify user credentials.
         $loggedInUser = $this->userModel->getUserCredentials($data['email'], $data['password']);
+
         if($loggedInUser){
           // Start the session and redirect to dashboard.
-          logUserIn($loggedInUser, $redirectPath);
+          $this->logUserIn($loggedInUser, $redirectPath);
         }else{
           $data['emailError'] = 'Incorrect email or password.';
           $data['passwordError'] = 'Incorrect email or password.';
@@ -82,6 +83,11 @@ class Users extends Controller {
       // Load the register view with the default data.
       $this->view('users/register', $data);
     }
+  }
+
+  private function logUserIn($loggedInUser, $redirectPath){
+    $this->userModel->updateUserActivity($loggedInUser->userId);
+    logUserIn($loggedInUser, $redirectPath);
   }
 
   /**
