@@ -6,10 +6,6 @@ class Users extends Controller {
     $this->userModel = $this->model('User');
   }
 
-  public function index(){
-    echo 'users index';
-  }
-
   public function login(){
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
       // Please see: https://www.php.net/manual/en/function.filter-input-array.php
@@ -27,7 +23,7 @@ class Users extends Controller {
 
         if($loggedInUser){
           // Start the session and redirect to dashboard.
-          $this->logUserIn($loggedInUser, $redirectPath);
+          $this->logUserIn($loggedInUser, 'pages/dashboard');
         }else{
           $data['emailError'] = 'Incorrect email or password.';
           $data['passwordError'] = 'Incorrect email or password.';
