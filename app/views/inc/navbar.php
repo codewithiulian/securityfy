@@ -7,14 +7,20 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="<?php echo URLROOT . '/pages/items'; ?>">Products</a>
+        <a class="nav-link" href="<?php echo URLROOT . '/pages/items'; ?>">Items</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="<?php echo URLROOT . '/users/login'; ?>">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="<?php echo URLROOT . '/users/register'; ?>">Register</a>
-      </li>
+      <?php if(isLoggedIn()) : ?>
+        <li class="nav-item">
+          <a class="nav-link" href="<?php echo URLROOT . '/users/logout'; ?>">Logout</a>
+        </li>
+      <?php else: ?>
+        <li class="nav-item">
+          <a class="nav-link" href="<?php echo URLROOT . '/users/login'; ?>">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?php echo URLROOT . '/users/register'; ?>">Register</a>
+        </li>
+      <?php endif; ?>
     </ul>
   </div>
 </nav>

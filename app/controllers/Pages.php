@@ -8,7 +8,7 @@ class Pages extends Controller {
   }
 
   public function dashboard(){
-    if(!isLoggedIn()) $this->view('users/login');
+    if(!isLoggedIn()) redirect('pages/index');
     $this->view('pages/dashboard');
   }
 
