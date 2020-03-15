@@ -7,6 +7,8 @@
  // Load the config file.
  require_once 'config/config.php';
 
+ // Load the Helper class.
+ require_once 'helpers/Helper.php';
    // Autoload Helpers
 spl_autoload_register(function($className){
   require_once 'helpers/' . $className .'.php';
