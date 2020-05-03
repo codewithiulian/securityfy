@@ -47,6 +47,8 @@ class Database {
     if(is_null($type)){
       // Define parameter type based on the data type.
       switch(true){
+        case isset($type):
+          break;
         case is_int($value):
           $type = PDO::PARAM_INT;
           break;
