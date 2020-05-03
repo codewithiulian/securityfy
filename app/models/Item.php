@@ -1,21 +1,49 @@
 <?php
+
 /**
  * This class interacts with the database.
  * Item Model Creates, Reads, Updates and Deletes products data.
  */
-class Item {
+class Item
+{
   private $db;
 
-  public function __construct() {
+  public function __construct()
+  {
     $this->db = new Database();
   }
-  
+
+  /**
+   * Returns items counts for the current user:
+   * total items, total products, todal services.
+   */
+  public function getUserItemsCounts()
+  {
+    // This query uses conditional SUM functions for returning
+    // distinct item counts based on the type of item:
+    // items.type_id = 1 -- Product
+    // items.type_id = 2 -- Service
+    $this->db->query('
+      SELECT COUNT(i.item_id) AS totalItems,
+             SUM(CASE WHEN i.type_id = 1 THEN 1 ELSE 0 END) AS totalProducts,
+             SUM(CASE WHEN i.type_id = 2 THEN 1 ELSE 0 END) AS totalServices
+      FROM items AS i
+      INNER JOIN users AS u
+        ON i.user_id = u.user_id
+      WHERE i.user_id = :userId
+    ');
+    $this->db->addParameter(':userId', $_SESSION['userId']);
+
+    return $this->db->getSingle();
+  }
+
   /**
    * Adds an item to the database for a logged in user.
    */
-  public function addItem($data){
+  public function addItem($data)
+  {
     $image = fopen($data['image'], 'rb');
-    try{
+    try {
       // Insert the new user record.
       $this->db->query("INSERT INTO items (item_id,
                                            user_id,
@@ -36,7 +64,7 @@ class Item {
       $this->db->addParameter(':image', $image, PDO::PARAM_LOB);
 
       $this->db->execute();
-    }catch(PDOException $exception){
+    } catch (PDOException $exception) {
       // Do not catch the exeption only return false.
       return false;
     }
@@ -46,16 +74,23 @@ class Item {
   /**
    * Returns a list of products pertaining to a user id.
    */
-  public function getItems($userId){
-    $this->db->query('SELECT items.item_name AS itemTitle,
-                             items.item_description AS itemDescription,
-                             users.full_name AS itemAuthor,
-                             items.updated_on AS itemDate
-                      FROM items
-                      INNER JOIN users
-                        ON users.user_id = items.user_id
-                      WHERE items.user_id = :userId');
-    $this->db->addParameter(':userId', $userId);
+  public function getUserItems()
+  {
+    $this->db->query('SELECT i.item_id AS itemId,
+                             i.item_title AS itemTitle,
+                             i.item_description AS itemDescription,
+                             u.first_name AS itemAuthor,
+                             i.updated_on AS itemDate,
+                             i.image AS itemImage,
+                             it.type_name AS itemType
+                      FROM items AS i
+                      INNER JOIN users u
+                        ON u.user_id = i.user_id
+                      INNER JOIN item_type it
+                        ON i.type_id = it.type_id
+                      WHERE i.user_id = :userId
+                      ORDER BY i.updated_on DESC;');
+    $this->db->addParameter(':userId', $_SESSION['userId']);
 
     return $this->db->getList();
   }
