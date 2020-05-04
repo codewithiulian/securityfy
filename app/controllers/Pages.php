@@ -6,7 +6,7 @@ class Pages extends Controller
   public function __construct()
   {
     $this->userModel = $this->model('User');
-    $this->itemModel = $this->model('Item');
+    $this->itemDomain = $this->domain('ItemDomain');
   }
 
   // Functionality for the Dashboard page
@@ -15,10 +15,21 @@ class Pages extends Controller
     // Redirect if not logged in.
     if (!isLoggedIn()) redirect('pages/index');
 
-    $data = $this->populateDashboard();
+    // If the request is a GET.
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+      // Get the dashboard data.
+      $data = $this->populateDashboard();
 
-    // Load the dashboard.
-    $this->view('pages/dashboard', $data);
+      // If the 
+      if (isset($_GET['request'])) {
+        if ($_GET['request'] === "dashboard_request_data") {
+          echo json_encode($data);
+        }
+      } else {
+        // Load the dashboard.
+        $this->view('pages/dashboard', $data);
+      }
+    }
   }
 
   public function add()
@@ -27,15 +38,15 @@ class Pages extends Controller
       $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
       // Initialise the data object array.
-      $data = $this->defineRequestData($_POST);
+      $data = $this->itemDomain->defineRequestData($_POST);
 
       // Empty fields validation.
-      $this->validateEmptyFields($data);
+      $this->itemDomain->validateEmptyFields($data);
 
       // If all the fields are valid.
-      if ($this->fieldsAreValid($data)) {
+      if ($this->itemDomain->fieldsAreValid($data)) {
         // Add the item and redirect to dashboard.
-        if ($this->itemModel->addItem($data)) {
+        if ($this->itemDomain->addItem($data)) {
           // Redirect to dashboard.
           redirect('pages/dashboard');
         } else {
@@ -48,7 +59,7 @@ class Pages extends Controller
     } else {
       // Redirect if not logged in.
       if (!isLoggedIn()) redirect('pages/index');
-      $data = $this->defineInitData();
+      $data = $this->itemDomain->defineInitData();
       // Load the add view.
       $this->view('items/add', $data);
     }
@@ -77,18 +88,14 @@ class Pages extends Controller
     $this->view('pages/index');
   }
 
-  // Helper methods.
-
-  // Dashboard functions.
-
   /**
    * Binds the data necessary for the dashboard.
    */
   private function populateDashboard()
   {
     // Get items counts data for the Insights section.
-    $insights = $this->itemModel->getUserItemsCounts();
-    $items = $this->itemModel->getUserItems();
+    $insights = $this->itemDomain->getUserItemsCounts();
+    $items = $this->itemDomain->getUserItems();
 
 
     $data = array(
@@ -99,120 +106,5 @@ class Pages extends Controller
     );
 
     return $data;
-  }
-
-  // Add functions.
-
-  /**
-   * Helper function to define a default object to load the view with.
-   */
-  private function defineInitData()
-  {
-    // Define default data object.
-    $data = [
-      'title' => '',
-      'type' => '',
-      'description' => '',
-      'image' => '',
-      'titleError' => '',
-      'descriptionError' => '',
-      'imageError' => ''
-    ];
-
-    return $data;
-  }
-
-  /**
-   * Function that returns true if all errors are empty.
-   */
-  private function fieldsAreValid($data)
-  {
-    return empty($data['titleError'])
-      && empty($data['descriptionError'])
-      && empty($data['imageError']);
-  }
-
-  /**
-   * Validates for empty fields.
-   */
-  private function validateEmptyFields(&$data)
-  {
-    if (empty($data['title'])) {
-      $data['titleError'] = 'Please fill in the title of the item.';
-    }
-    if (empty($data['description'])) {
-      $data['descriptionError'] = 'Please give your item a description.';
-    }
-  }
-
-  /**
-   * Defines the default data for the request.
-   */
-  private function defineRequestData($postData)
-  {
-    $imageError = '';
-    // Define default data object.
-    $data = [
-      'title' => trim($postData['title']),
-      'type' => trim($postData['type']),
-      'description' => trim($postData['description']),
-      'image' => $this->extractImage($imageError),
-      'titleError' => '',
-      'descriptionError' => '',
-      'imageError' => $imageError
-    ];
-
-    return $data;
-  }
-
-  /**
-   * Method that extracts the image from the form input.
-   * It also catches errors, limits file sizes and types.
-   */
-  private function extractImage(&$imageError)
-  {
-
-    // Docs reference: https://www.php.net/manual/en/features.file-upload.php
-    $imageFile = $_FILES['image'];
-
-    // Get the file properties.
-    $fileName = $_FILES['image']['name'];
-    $fileType = $_FILES['image']['type'];
-    $fileLocation = $_FILES['image']['tmp_name'];
-    $fileError = $_FILES['image']['error'];
-    $fileSize = $_FILES['image']['size'];
-
-    // Get the file type from name (lower case).
-    $fileExtRaw = explode('.', $fileName);
-    $fileExt = strtolower(end($fileExtRaw));
-    // Define the allowed extensions.
-    $allowedExt = array('png', 'jpeg', 'jpg');
-
-    if ($fileError == UPLOAD_ERR_NO_FILE) {
-      $imageError = "Please don't forget to upload an image with your item.";
-      return null;
-    } else if (in_array($fileExt, $allowedExt)) {
-      // If there's any error uploading the file.
-      if ($fileError === 0) {
-        // Max file size is 10Mb.
-        if ($fileSize < 10000000) {
-          return $fileLocation;
-          // $fileCurrentName = uniqid('', true) . "" .$fileExt;
-          // $fileDest = 'uploads' . $fileCurrentName;
-          // move_uploaded_file($fileLocation, $fileDest);
-        } else {
-          $imageError = 'The file uploaded is too large (max 10 Mb).';
-          return null;
-        }
-      } else {
-        $imageError = 'There was an error uploading your file.';
-        return null;
-      }
-    } else {
-      $imageError = 'File type not supported (PNG, JPEG and JPG).';
-      return null;
-    }
-
-    return $fileLocation;
   }
 }

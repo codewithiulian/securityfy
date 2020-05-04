@@ -76,12 +76,12 @@ class Item
    */
   public function getUserItems()
   {
-    $this->db->query('SELECT i.item_id AS itemId,
+    $this->db->query("SELECT i.item_id AS itemId,
                              i.item_title AS itemTitle,
                              i.item_description AS itemDescription,
-                             u.first_name AS itemAuthor,
+                             CONCAT(u.first_name, ' ', u.last_name) AS itemAuthor,
                              i.updated_on AS itemDate,
-                             i.image AS itemImage,
+                            --  i.image AS itemImage,
                              it.type_name AS itemType
                       FROM items AS i
                       INNER JOIN users u
@@ -89,7 +89,7 @@ class Item
                       INNER JOIN item_type it
                         ON i.type_id = it.type_id
                       WHERE i.user_id = :userId
-                      ORDER BY i.updated_on DESC;');
+                      ORDER BY i.updated_on DESC;");
     $this->db->addParameter(':userId', $_SESSION['userId']);
 
     return $this->db->getList();

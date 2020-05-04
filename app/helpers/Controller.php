@@ -46,8 +46,11 @@ class Controller
   public function domain($domain, $data = [])
   {
     $fileRequested = '../app/domains/' . $domain . '.php';
+    // If the domain exists.
     if (file_exists($fileRequested)) {
+      // Require it.
       require_once $fileRequested;
+      return new $domain();
     } else {
       die('Domain ' . $domain . ' does not exist.');
     }
