@@ -9,6 +9,24 @@ class Pages extends Controller
     $this->itemDomain = $this->domain('ItemDomain');
   }
 
+  // Functionality for item View Page.
+  public function show()
+  {
+    // If on postback.
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+      // Redirect if not logged in.
+      if (!isLoggedIn()) redirect('pages/index');
+
+      // Get the itemId from URL.
+      $itemId = $this->getItemIdParameter();
+      // Get the item with this itemId.
+      $data = $this->itemDomain->getUserItem($itemId);
+      $this->view('items/show', $data);
+    } else {
+      redirect('pages/dashboard');
+    }
+  }
+
   // Functionality for the Dashboard page
   public function dashboard()
   {
@@ -20,7 +38,7 @@ class Pages extends Controller
       // Get the dashboard data.
       $data = $this->populateDashboard();
 
-      // If the 
+      // If the request is valid.
       if (isset($_GET['request'])) {
         if ($_GET['request'] === "dashboard_request_data") {
           echo json_encode($data);
@@ -106,5 +124,19 @@ class Pages extends Controller
     );
 
     return $data;
+  }
+
+  /**
+   * Returns the itemId parameter from the URL.
+   */
+  private function getItemIdParameter()
+  {
+    // Reference: https://stackoverflow.com/questions/6768793/get-the-full-url-in-php
+    $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    // Reference: https://www.geeksforgeeks.org/how-to-get-parameters-from-a-url-string-in-php/
+    $url_components = parse_url($url);
+    // string passed via URL 
+    parse_str($url_components['query'], $params);
+    return $params['item'];
   }
 }
