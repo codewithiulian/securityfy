@@ -103,7 +103,26 @@ class Pages extends Controller
 
   public function index()
   {
-    $this->view('pages/index');
+    // If the request is a GET.
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+      // Get the dashboard data.
+      $data = $this->populateIndex();
+
+      $this->view('pages/index', $data);
+    } else {
+      $this->view('pages/index');
+    }
+  }
+
+  /**
+   * Binds the data necessary for the index page.
+   */
+  private function populateIndex()
+  {
+    // Get all the items.
+    $items = $this->itemDomain->getItems();
+
+    return $items;
   }
 
   /**
