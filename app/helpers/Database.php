@@ -1,11 +1,15 @@
 <?php
+
 /**
  * PDO Database class.
  * Executes DB connections.
  * Binds values and returns the result set.
  * Creates prepared statements.
+ * IMPORTANT- INSPIRED FROM UDEMY COURSE!!!
+ * Reference: https://www.udemy.com/course/learn-object-oriented-php-by-building-a-complete-website/
  */
-class Database {
+class Database
+{
   private $host = DB_HOST;
   private $user = DB_USER;
   private $pass = DB_PASS;
@@ -15,7 +19,8 @@ class Database {
   private $stmt; // Query statement.
   private $error; // Error message.
 
-  public function __construct() {
+  public function __construct()
+  {
     // Set DSN.
     $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
     // Define the attributes.
@@ -23,11 +28,11 @@ class Database {
       PDO::ATTR_PERSISTENT => true,
       PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     );
-    
+
     // Create PDO instance.
-    try{
+    try {
       $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
-    }catch(PDOException $err){
+    } catch (PDOException $err) {
       $this->error = $err->getMessage();
       echo $this->error;
     }
@@ -36,17 +41,19 @@ class Database {
   /**
    * Prepares the query statement for execution.
    */
-  public function query($sql){
+  public function query($sql)
+  {
     $this->stmt = $this->dbh->prepare($sql);
   }
 
   /**
    * Adds the given parameter to the query statement.
    */
-  public function addParameter($param, $value, $type = null){
-    if(is_null($type)){
+  public function addParameter($param, $value, $type = null)
+  {
+    if (is_null($type)) {
       // Define parameter type based on the data type.
-      switch(true){
+      switch (true) {
         case isset($type):
           break;
         case is_int($value):
@@ -70,14 +77,16 @@ class Database {
    * Executes the query statement.
    * Returns true if successful or false if failed.
    */
-  public function execute(){
+  public function execute()
+  {
     return $this->stmt->execute();
   }
 
   /**
    * Returns a single result object based on the query statement executed.
    */
-  public function getSingle(){
+  public function getSingle()
+  {
     $this->execute();
 
     return $this->stmt->fetch(PDO::FETCH_OBJ);
@@ -86,14 +95,16 @@ class Database {
   /**
    * Returns an array of results as objects based on the query statement executed.
    */
-  public function getList(){
+  public function getList()
+  {
     $this->execute();
 
     return $this->stmt->fetchAll(PDO::FETCH_OBJ);
   }
 
   // Get row count.
-  public function rowCount(){
+  public function rowCount()
+  {
     return $this->stmt->rowCount();
   }
 }

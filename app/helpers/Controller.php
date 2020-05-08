@@ -3,6 +3,8 @@
 /**
  * Base Controller.
  * Loads Models and Views.
+ * IMPORTANT- INSPIRED FROM UDEMY COURSE!!!
+ * Reference: https://www.udemy.com/course/learn-object-oriented-php-by-building-a-complete-website/
  */
 class Controller
 {
