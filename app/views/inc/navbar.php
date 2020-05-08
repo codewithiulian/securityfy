@@ -13,6 +13,9 @@
         <li class="nav-item">
           <a class="nav-link" href="<?php echo URLROOT . '/pages/dashboard'; ?>">Dashboard</a>
         </li>
+        <li>
+          <a class="nav-link" href="<?php echo URLROOT . '/pages/profile'; ?>">Profile</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="<?php echo URLROOT . '/users/logout'; ?>">Logout</a>
         </li>
