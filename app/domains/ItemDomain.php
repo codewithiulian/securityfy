@@ -25,9 +25,9 @@ class ItemDomain extends Controller
    * Method that returns an item pertaining to the
    * authenticated user.
    */
-  public function getUserItem($itemId)
+  public function getItem($itemId)
   {
-    return $this->itemModel->getUserItem($itemId);
+    return $this->itemModel->getItem($itemId);
   }
 
   /**

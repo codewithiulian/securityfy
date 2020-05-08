@@ -2,7 +2,7 @@
 <div class="row">
   <div class="card container mt-5 col-6 align-middle">
     <div class="card-body">
-    <h3 class="card-title">Create an account</h3>
+      <h3 class="card-title">Log in</h3>
       <form action="<?php echo URLROOT . '/users/login'; ?>" method="post">
         <div class="form-group">
           <label for="email">Email address:</label>

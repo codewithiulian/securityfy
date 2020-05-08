@@ -20,7 +20,7 @@ class Pages extends Controller
       // Get the itemId from URL.
       $itemId = $this->getItemIdParameter();
       // Get the item with this itemId.
-      $data = $this->itemDomain->getUserItem($itemId);
+      $data = $this->itemDomain->getItem($itemId);
       $this->view('items/show', $data);
     } else {
       redirect('pages/dashboard');
