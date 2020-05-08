@@ -41,6 +41,7 @@ class Pages extends Controller
       // If the request is valid.
       if (isset($_GET['request'])) {
         if ($_GET['request'] === "dashboard_request_data") {
+          // Return the object.
           echo json_encode($data);
         }
       } else {
